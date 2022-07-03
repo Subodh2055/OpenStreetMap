@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <title>List Of Lat lng</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+          crossorigin="anonymous" />
+
+<!--    <a href="http://localhost:63342/map/templates/map.html?_ijt=508j1deh9rckm38um08av5a0p9&_ij_reload=RELOAD_ON_SAVE" class="button">Go to Map</a>-->
+</head>
+<body>
+
+
+    <div class="container">
+        <h3> List Of Lat lng</h3>
+        <hr/>
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th > Id</th>
+                <th>Area</th>
+                <th>LatLng</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="newdata: ${mapValue}">
+                <td th:text="${newdata.id}"/>
+                <td th:text="${newdata.area}"/>
+                <td th:text="${newdata.latLng}"/>
+                <td><a class="btn btn-info" th:href="@{'displayMap/' + ${newdata?.id}}">
+                    Test
+                </a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
+<!--<script>-->
+
+<!--     // var row = document.getElementsByClassName('row');-->
+<!--     // console.log(row.length)-->
+<!--     // test = []-->
+<!--     //-->
+<!--     // for(var i=0; i<row.length; i++) {-->
+<!--     //     row[i].addEventListener('click', (v) => {-->
+<!--     //         alert("ok");-->
+<!--     //         console.log(v)-->
+<!--     //         // return alert(map)-->
+<!--     //-->
+<!--     //-->
+<!--     //     })-->
+
+<!--     }-->
+<!--    //  <button id="myButton" class="float-left submit-button">home</button>-->
+<!--    // <script type="text/javascript">-->
+<!--    //         document.getElementsByClassName("map").onClick =-->
+
+<!--    //  function test(){-->
+<!--    //     location.href="map.html"-->
+<!--    // }-->
+
+<!--</script>-->

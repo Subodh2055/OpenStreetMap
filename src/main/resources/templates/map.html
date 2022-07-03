@@ -1,0 +1,129 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <style>
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+
+    <form name=form onclick="save()">
+        <input type="button" value=save>
+    </form>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2.rc.2/leaflet.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2.rc.2/leaflet.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" rel="stylesheet" />
+
+<!--    <script src="../static/leaflet/leaflet.js"></script>-->
+<!--    <script src="../static/leaflet/leaflet-src.esm.js"></script>-->
+<!--    <script src="../static/leaflet/leaflet-src.js"></script>-->
+<!--    <link href="../static/leaflet/leaflet.css" rel="stylesheet"/>-->
+<!--    <script src="../static/js/draw.js"></script>-->
+<!--    <link href="../static/css/draw.css" rel="stylesheet"/>-->
+
+    <title>SuborderMap</title>
+
+<body>
+<div id='map'></div>
+
+</body>
+</html>
+
+<script>
+    // center of the map
+    var center = [27.7205799, 85.3170777];
+    let poly = [];
+    let data = {};
+    // Create the map
+    var map = L.map('map').setView(center, 15);
+
+    // Set up the OSM layer
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19.6
+        }).addTo(map);
+
+    // Initialise the FeatureGroup to store editable layers
+    var editableLayers = new L.FeatureGroup();
+    map.addLayer(editableLayers);
+
+    var options;
+    options = {
+        position: 'topleft',
+        draw: {
+            // disable toolbar item by setting it to false
+            polyline: true,
+            circle: false, // Turns off this drawing tool
+            polygon: false,
+            marker: false,
+            rectangle: false,
+        }
+    };
+
+    // Initialise the draw control and pass it the FeatureGroup of editable layers
+    var drawControl = new L.Control.Draw(options);
+    map.addControl(drawControl);
+
+    var editableLayers = new L.FeatureGroup();
+    map.addLayer(editableLayers);
+
+    map.on('draw:created', function (e) {
+        poly = [];
+        editableLayers.clearLayers();
+        editableLayers.addLayer(e.layer);
+
+
+        // Calculating the distance of the polyline
+        var tempLatLng = null;
+        var totalDistance = 0.00000;
+        e.layer._latlngs.forEach((latlng, i) => {
+            if (tempLatLng == null) {
+                tempLatLng = latlng;
+            }
+
+            totalDistance += tempLatLng.distanceTo(latlng);
+            poly.push(Number(totalDistance));
+            tempLatLng = latlng;
+
+        });
+        e.layer.bindPopup((totalDistance).toFixed(2) + 'meters');
+        e.layer.openPopup();
+        layer = e.layer;
+        layer.bindPopup(polygonArea(poly) + 'Sq. ft');
+        editableLayers.addLayer(layer);
+        data = {
+            area: polygonArea(poly),
+            latLng: e.layer._latlngs
+
+        };
+        data = JSON.stringify(data);
+        console.log('Data:', data);
+    });
+
+
+    //polygon formula
+    function polygonArea(polygons) {
+        var j = 0;
+        var area = 0;
+        for (var i = 0; i < polygons.length; i++) {
+            area += (polygons[i] + polygons[j]) * (polygons[j] - polygons[i]);
+        }
+        area /= 2;
+        console.log('Area', area)
+        return (area < 0 ? -area : area);
+    }
+   function save() {
+       const xhttp = new XMLHttpRequest();
+       xhttp.open("POST", 'http://localhost:2022/save');
+       xhttp.setRequestHeader("Content-type", "application/json");
+       xhttp.send(data);
+
+   }
+
+
+</script>
